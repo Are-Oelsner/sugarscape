@@ -4,6 +4,7 @@ public class Cell
   private double resourceStatus = 0;
   private double regrowthRate = 1.0;
   private boolean occupied = false;
+  private double timeLastDepleted = 0;
 
   public Cell() {
 
@@ -25,6 +26,20 @@ public class Cell
 
   public boolean getOccupied() {
     return occupied;
+  }
+
+  public void setResourceStatus(double r) {
+    resourceStatus = r;
+  }
+
+  public void updateCell(double time) {
+    resourceStatus = 0;
+    timeLastDepleted = time;
+  }
+
+  public void regrowCell(double time) {
+    dt = time - timeLastDepleted;
+    resourceStatus = min(resourceCapacity, resourceStatus + (dt * regrowthRate));
   }
 
   public void setOccupied(boolean status) {

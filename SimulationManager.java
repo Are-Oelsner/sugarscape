@@ -8,7 +8,8 @@ import java.util.PriorityQueue;
 
 class SimulationManager extends WindowManager
 {
-  protected ArrayList<Agent> agentList;
+  protected PriorityQueue<double> pq;
+  protected Map<double, Agent> map;
   // A list of all agents in the simulation; this is declared as
   // protected because we access it directly from within AgentCanvas.
   // Why?  Because we only access it to draw the agents, and given
@@ -31,24 +32,27 @@ class SimulationManager extends WindowManager
     super("Sugarscape", 500, 500);  // name, window width, window height
 
     this.gridSize  = gridSize;
-    this.agentList = new ArrayList<Agent>();
+    this.pq = new PriorityQueue<double>();
+    this.map = new Map<double, Agent>
 
     rng = new Random(initialSeed);
 
     this.time = 0;   // initialize the simulation clock
 
     landscape = new Landscape(gridSize, gridSize);
+    double minTime;
 
     for (int i = 0; i < numAgents; i++)
     {
       Agent a = new Agent("agent " + agentList.size());
-      agentList.add(a);
+      minTime = a.getMinTime();
+      map.put(minTime, a);
+      pq.add(minTime);
 
-      int row = rng.nextInt(gridSize); // an int in [0, gridSize-1]
-      int col = rng.nextInt(gridSize); // an int in [0, gridSize-1]
-
-      // we should check to make sure the cell isn't already occupied!
-
+      do { // Randomly assigns agent to unoccupied cell
+        int row = rng.nextInt(gridSize); // an int in [0, gridSize-1]
+        int col = rng.nextInt(gridSize); // an int in [0, gridSize-1]
+      } while(!landscape.getCellAt(row, col).getOccupied())
       a.setRowCol(row, col);
     }
 
@@ -77,23 +81,25 @@ class SimulationManager extends WindowManager
   //======================================================================
   public void run() {
     // bogus simulation code below...
-    int t = 0;
-    while(t < 100) {
-      this.time = t;
+    while(this.time < 100) {
+      this.time = pq.peak();
 
-      int[] rand = new Random().ints(0, agentList.size()).distinct().limit(agentList.size()).toArray();
-      System.out.println(rand[1]);
+      // Get next agent
+      Agent a = map.get(this.time);
+      // Remove from map and priorityqueue
+      map.remove(pq.poll());
+      //TODO TODO TODO keep converting to event based starting here down TODO
+      // Regrow old cell based on time since lastDepleted time
+      landscape.getCellAt(a.getRow(), a.getCol()).regrowCell(t);
+      // Move agent to richest available cell within vision range
+      moveAgent(a);
+      // Depletes resources of new cell, sets lastDepleted time of cell.
+      landscape.getCellAt(a.getRow(), a.getCol()).updateCell(t);
 
-      for (int i = 0; i < rand.length; i++)
-      {
-        Agent a = agentList.get(rand[i]);
-        moveAgent(a);
-
-      }
+      //TODO add agent back to PQ
       canvas.repaint();
-      try { Thread.sleep(500); } catch (Exception e) {}
+      //try { Thread.sleep(500); } catch (Exception e) {}
 
-      t++;
     }
   }
 
@@ -144,8 +150,6 @@ class SimulationManager extends WindowManager
   }
 
 
-
-
   //======================================================================
   //* public static void main(String[] args)
   //* Just including main so that the simulation can be executed from the
@@ -153,8 +157,7 @@ class SimulationManager extends WindowManager
   //* class, which will start the GUI window and then we're off and
   //* running...
   //======================================================================
-  public static void main(String[] args)
-  {
+  public static void main(String[] args) {
     new SimulationManager(40, 400, 8675309);
   }
 }
