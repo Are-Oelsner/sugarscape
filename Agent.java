@@ -29,7 +29,7 @@ public class Agent
     this.intermovementTime = time + (Math.log(1 - r.nextDouble()) / -0.5);
     this.deathTime = Math.min(time + (resources / metabolicRate), maxAge);
     this.minTime = Math.min(intermovementTime, deathTime);
-    System.out.println("time: " + time + "  min time: " + minTime);
+    System.out.println("Current time:\t" + time + "  \tmin time: " + minTime);
   }
 
   //TODO

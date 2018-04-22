@@ -88,7 +88,7 @@ class SimulationManager extends WindowManager {
     // Function temporary variables
     int agentIndex;
     double minTime;
-    while(this.time < 100000) {
+    while(this.time < 100) {
       this.time = (double)pq.peek();
 
       // Get next agent
@@ -117,7 +117,7 @@ class SimulationManager extends WindowManager {
 
       canvas.repaint();
       //try { Thread.sleep(500); } catch (Exception e) {}
-      try { Thread.sleep(100); } catch (Exception e) {}
+      try { Thread.sleep(5); } catch (Exception e) {}
 
     }
   }
