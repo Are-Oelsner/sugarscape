@@ -4,25 +4,20 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.PriorityQueue;
 
-class SimulationManager extends WindowManager
-{
-  protected PriorityQueue<double> pq;
-  protected Map<double, Agent> map;
-  // A list of all agents in the simulation; this is declared as
-  // protected because we access it directly from within AgentCanvas.
-  // Why?  Because we only access it to draw the agents, and given
-  // that the list may be large, it doesn't make sense to
-  // make a copy and return that copy to AgentCanvas.
-
-  protected Landscape landscape;
-  protected int gridSize;
-
-  private AgentCanvas canvas;  // the canvas on which agents are drawn
+class SimulationManager extends WindowManager {
+  ///Simulation Variables
+  protected PriorityQueue<Double> pq;   // PriorityQueue for next event times
+  protected Map<Double, Integer> map;   // Map from next event times to agent index in agentList
+  protected ArrayList<Agent> agentList; // List of agents in simulation
+  protected Landscape landscape;        // Landscape object
+  protected int gridSize;               // Landscape edge length in cells
+  private AgentCanvas canvas;           // the canvas on which agents are drawn
+  private double time;                  // current simulation time
   private Random rng;
-
-  private double time;  // the simulation time
 
   //======================================================================
   //* public SimulationManager(int gridSize, int numAgents, int initialSeed)
@@ -31,29 +26,38 @@ class SimulationManager extends WindowManager
   {
     super("Sugarscape", 500, 500);  // name, window width, window height
 
+    this.pq = new PriorityQueue<Double>(numAgents);
+    this.map = new HashMap<Double, Integer>();
+    this.agentList = new ArrayList<Agent>(numAgents);
+    this.landscape = new Landscape(gridSize, gridSize);
     this.gridSize  = gridSize;
-    this.pq = new PriorityQueue<double>();
-    this.map = new Map<double, Agent>
+    this.time = 0.;
+    this.rng = new Random(initialSeed);
 
-    rng = new Random(initialSeed);
+    // TODO Might want to make the max value much lower. This would be one agent per
+    // cell, which wouldn't allow for movement. Also because of the random
+    // nature of placing agents originally it would make setup times increase
+    // exponentially.
+    if(numAgents > (gridSize * gridSize))
+      System.out.println("Error: number of agents ( " + numAgents + " ) exceeds number of cells ( " + (gridSize * gridSize) + ").");
 
     this.time = 0;   // initialize the simulation clock
 
-    landscape = new Landscape(gridSize, gridSize);
+    //Function temp variables
     double minTime;
+    int row, col;
 
-    for (int i = 0; i < numAgents; i++)
-    {
-      Agent a = new Agent("agent " + agentList.size());
-      minTime = a.getMinTime();
-      map.put(minTime, a);
+    for (int i = 0; i < numAgents; i++) {
+      agentList.add(new Agent("agent " + i, 0));
+      minTime = agentList.get(i).getMinTime();
+      map.put(minTime, i);
       pq.add(minTime);
 
       do { // Randomly assigns agent to unoccupied cell
-        int row = rng.nextInt(gridSize); // an int in [0, gridSize-1]
-        int col = rng.nextInt(gridSize); // an int in [0, gridSize-1]
-      } while(!landscape.getCellAt(row, col).getOccupied())
-      a.setRowCol(row, col);
+        row = rng.nextInt(gridSize); // an int in [0, gridSize-1]
+        col = rng.nextInt(gridSize); // an int in [0, gridSize-1]
+      } while(landscape.getCellAt(row, col).getOccupied());
+      agentList.get(i).setRowCol(row, col);
     }
 
     this.createWindow();
@@ -80,27 +84,51 @@ class SimulationManager extends WindowManager
   //* This is where your main simulation event engine code should go...
   //======================================================================
   public void run() {
-    // bogus simulation code below...
-    while(this.time < 100) {
-      this.time = pq.peak();
+    System.out.println("Run");
+    // Function temporary variables
+    int agentIndex;
+    double minTime;
+    while(this.time < 100000) {
+      this.time = (double)pq.peek();
 
       // Get next agent
-      Agent a = map.get(this.time);
+      agentIndex = map.get(this.time);
+      Agent a = agentList.get(agentIndex);
       // Remove from map and priorityqueue
       map.remove(pq.poll());
-      //TODO TODO TODO keep converting to event based starting here down TODO
       // Regrow old cell based on time since lastDepleted time
-      landscape.getCellAt(a.getRow(), a.getCol()).regrowCell(t);
-      // Move agent to richest available cell within vision range
-      moveAgent(a);
-      // Depletes resources of new cell, sets lastDepleted time of cell.
-      landscape.getCellAt(a.getRow(), a.getCol()).updateCell(t);
+      landscape.getCellAt(a.getRow(), a.getCol()).regrowCell(this.time);
+      // Handles Event
+      if(a.getNextEventType() == 0) { // Handle movement and resource consumption
+        // Move agent to richest available cell within vision range
+        moveAgent(a);
+        // Depletes resources of new cell, sets lastDepleted time of cell.
+        landscape.getCellAt(a.getRow(), a.getCol()).updateCell(this.time);
+      }
+      else { // Handle death
+        agentList.set(agentIndex, new Agent("agent " + agentIndex, this.time));
+        placeAgent(agentList.get(agentIndex));
+      }
 
-      //TODO add agent back to PQ
+      // Add agent back to map and PQ
+      minTime = agentList.get(agentIndex).getMinTime();
+      map.put(minTime, agentIndex);
+      pq.add(minTime);
+
       canvas.repaint();
       //try { Thread.sleep(500); } catch (Exception e) {}
+      try { Thread.sleep(100); } catch (Exception e) {}
 
     }
+  }
+
+  private void placeAgent(Agent a) {
+    int row, col;
+      do { // Randomly assigns agent to unoccupied cell
+        row = rng.nextInt(gridSize); // an int in [0, gridSize-1]
+        col = rng.nextInt(gridSize); // an int in [0, gridSize-1]
+      } while(landscape.getCellAt(row, col).getOccupied());
+      a.setRowCol(row, col);
   }
 
   private void moveAgent(Agent a) {
@@ -144,8 +172,11 @@ class SimulationManager extends WindowManager
       }
     }
 
-    // we should check to make sure the cell isn't already occupied!
+    // Assign new cell
     a.setRowCol(maxRow, maxCol);
+    // Pass agent current resource levels of cell
+    a.harvest(landscape.getCellAt(maxRow, maxCol).getResourceStatus());
+    // Sets cell as occupied
     landscape.getCellAt(maxRow, maxCol).setOccupied(true);
   }
 

@@ -36,7 +36,7 @@ class AgentCanvas extends JPanel
 
     //======================================================================
     //* public AgentCanvas()
-    //* Constructor for the agent canvas.  Needs a reference to the 
+    //* Constructor for the agent canvas.  Needs a reference to the
     //* simulation manager.
     //======================================================================
     public AgentCanvas(SimulationManager theSimulation)
@@ -56,7 +56,7 @@ class AgentCanvas extends JPanel
     //======================================================================
     //* public void changeBackground()
     //* I used to allow the user to select an image background.  Dropped it,
-    //* but if we ever go back to it, we should take any existing agents and 
+    //* but if we ever go back to it, we should take any existing agents and
     //* reposition at random b/c the image is likely a different size.
     //======================================================================
     public void updateGrid()
@@ -133,7 +133,7 @@ class AgentCanvas extends JPanel
             borders = scrollPane.getInsets();
         }
 
-        // Note that drawImage automatically scales the image to fit that 
+        // Note that drawImage automatically scales the image to fit that
         // rectangle.
         int renderWidth  = gridWidth * agentSize;
         int renderHeight = gridHeight * agentSize;
@@ -154,7 +154,7 @@ class AgentCanvas extends JPanel
         int numAgents = simulation.agentList.size();
         for (int i = 0; i < numAgents; i++)
         {
-            // the list of agents is 
+            // the list of agents is
             Agent a = simulation.agentList.get(i);
 
             // make sure not to draw any agent outside the image boundaries;
@@ -192,11 +192,11 @@ class AgentCanvas extends JPanel
             }
         }
 
-        // draw the grid last so that it will overlay the agent squares 
+        // draw the grid last so that it will overlay the agent squares
         drawGrid(graphics, viewportX, viewportY, renderWidth, renderHeight);
 
         // show the simulation time, number of agents
-        drawSimulationInfo(graphics, viewportX, viewportY, 
+        drawSimulationInfo(graphics, viewportX, viewportY,
                 renderWidth, renderHeight, borders);
 
         revalidate();
@@ -246,7 +246,7 @@ class AgentCanvas extends JPanel
         // the columns
         int agentSize = AgentCanvas.agentGUISize;
         for (int row = 0; row < width / agentSize; row++)
-            graphics.drawLine(x + (row * agentSize), y, 
+            graphics.drawLine(x + (row * agentSize), y,
                               x + (row * agentSize), y + height - 1);
 
         // the rows
@@ -269,7 +269,7 @@ class AgentCanvas extends JPanel
     {
         final int verticalSpaceBeforeText = 20;
 
-        DecimalFormat df = new DecimalFormat("0.00"); 
+        DecimalFormat df = new DecimalFormat("0.00");
         String info = "Time: " + df.format(simulation.getTime()) + "  " +
             "Agents: " + simulation.agentList.size();
 
@@ -284,16 +284,16 @@ class AgentCanvas extends JPanel
 
         // center text horizontally (max sure left side at least draws w/in
         // the viewport window -- i.e., x at least 0)
-        graphics.drawString(info, Math.max(x + startStringAt, 0), 
+        graphics.drawString(info, Math.max(x + startStringAt, 0),
                                   y + height + verticalSpaceBeforeText);
 
         // Make sure the image plus text (which may be a new one loaded in) is
-        // visible in the scroll pane.  If this isn't somewhere, scrollbars 
+        // visible in the scroll pane.  If this isn't somewhere, scrollbars
         // won't work in the main screen's encompassing JScrollPane.
         setPreferredSize(
             new Dimension(
                     Math.max(width + borders.left + borders.right, textWidth),
-                     height + borders.top + borders.bottom 
+                     height + borders.top + borders.bottom
                             + verticalSpaceBeforeText + textHeight));
 
     }

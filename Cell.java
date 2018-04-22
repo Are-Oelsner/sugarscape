@@ -1,7 +1,7 @@
 public class Cell
 {
   private double resourceCapacity = 1.0;
-  private double resourceStatus = 0;
+  private double resourceStatus = 1.0;
   private double regrowthRate = 1.0;
   private boolean occupied = false;
   private double timeLastDepleted = 0;
@@ -38,8 +38,7 @@ public class Cell
   }
 
   public void regrowCell(double time) {
-    dt = time - timeLastDepleted;
-    resourceStatus = min(resourceCapacity, resourceStatus + (dt * regrowthRate));
+    resourceStatus = Math.min(resourceCapacity, resourceStatus + ((time - timeLastDepleted) * regrowthRate));
   }
 
   public void setOccupied(boolean status) {

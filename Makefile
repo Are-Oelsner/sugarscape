@@ -1,6 +1,9 @@
 default:
 	javac *.java
 
+c: 
+	javac *.java -Xlint:unchecked
+
 r:
 	java SimulationManager
 
