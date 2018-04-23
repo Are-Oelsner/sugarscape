@@ -96,12 +96,12 @@ class SimulationManager extends WindowManager {
       Agent a = agentList.get(agentIndex);
       // Remove from map and priorityqueue
       map.remove(pq.poll());
-      // Regrow old cell based on time since lastDepleted time
-      landscape.getCellAt(a.getRow(), a.getCol()).regrowCell(this.time);
       // Handles Event
       if(a.getNextEventType() == 0) { // Handle movement and resource consumption
         // Move agent to richest available cell within vision range
         moveAgent(a);
+        // Regrow new cell based on time since lastDepleted time TODO should this be here?
+        landscape.getCellAt(a.getRow(), a.getCol()).regrowCell(this.time);
         // Depletes resources of new cell, sets lastDepleted time of cell.
         landscape.getCellAt(a.getRow(), a.getCol()).updateCell(this.time);
       }
@@ -115,6 +115,7 @@ class SimulationManager extends WindowManager {
       map.put(minTime, agentIndex);
       pq.add(minTime);
 
+      landscape.update(this.time);
       canvas.repaint();
       //try { Thread.sleep(500); } catch (Exception e) {}
       try { Thread.sleep(5); } catch (Exception e) {}
@@ -132,12 +133,13 @@ class SimulationManager extends WindowManager {
   }
 
   private void moveAgent(Agent a) {
+    //TODO create function that prioritizes cells based on agent metabolic rates for each resource, agent resource levels, cell max capacities/maybe current capacity. TODO
     int xSize = landscape.getXSize();
     int ySize = landscape.getYSize();
     int row = a.getRow();
     int col = a.getCol();
     int fov = a.getVision();
-    double maxResource = 0;
+    double maxSugar = 0;
     int maxRow = 0;
     int maxCol = 0;
     Cell temp;
@@ -147,26 +149,26 @@ class SimulationManager extends WindowManager {
     // need to account for multiple squares with the same amount of resources
     for (int j = 0; j <= fov; j++) {
       temp = landscape.getCellAt(row, (col + fov) % ySize);
-      if (temp.getCapacity() > maxResource && temp.getOccupied() == false) {
-        maxResource = temp.getCapacity();
+      if (temp.getSugarCapacity() > maxSugar && temp.getOccupied() == false) {
+        maxSugar = temp.getSugarCapacity();
         maxRow = row;
         maxCol = (col + fov) % ySize;
       }
       temp = landscape.getCellAt((row + fov) % xSize, col);
-      if (temp.getCapacity() > maxResource && temp.getOccupied() == false) {
-        maxResource = temp.getCapacity();
+      if (temp.getSugarCapacity() > maxSugar && temp.getOccupied() == false) {
+        maxSugar = temp.getSugarCapacity();
         maxRow = (row + fov) % xSize;
         maxCol = col;
       }
       temp = landscape.getCellAt(row, (col - fov + ySize) % ySize);
-      if (temp.getCapacity() > maxResource && temp.getOccupied() == false) {
-        maxResource = temp.getCapacity();
+      if (temp.getSugarCapacity() > maxSugar && temp.getOccupied() == false) {
+        maxSugar = temp.getSugarCapacity();
         maxRow = row;
         maxCol = (col - fov + ySize) % ySize;
       }
       temp = landscape.getCellAt((row - fov + xSize) % xSize, col);
-      if (temp.getCapacity() > maxResource && temp.getOccupied() == false) {
-        maxResource = temp.getCapacity();
+      if (temp.getSugarCapacity() > maxSugar && temp.getOccupied() == false) {
+        maxSugar = temp.getSugarCapacity();
         maxRow = (row - fov + xSize) % xSize;
         maxCol = col;
       }
@@ -175,7 +177,7 @@ class SimulationManager extends WindowManager {
     // Assign new cell
     a.setRowCol(maxRow, maxCol);
     // Pass agent current resource levels of cell
-    a.harvest(landscape.getCellAt(maxRow, maxCol).getResourceStatus());
+    a.harvest(landscape.getCellAt(maxRow, maxCol).getSugar(), landscape.getCellAt(maxRow, maxCol).getSpice());
     // Sets cell as occupied
     landscape.getCellAt(maxRow, maxCol).setOccupied(true);
   }
@@ -189,6 +191,33 @@ class SimulationManager extends WindowManager {
   //* running...
   //======================================================================
   public static void main(String[] args) {
-    new SimulationManager(40, 400, 8675309);
+    int gridsize = 40;
+    int numAgents = 400;
+    int initialSeed = 8675309;
+    if(args.length > 0) {
+      try {
+        gridsize = Integer.parseInt(args[0]);
+      }catch(NumberFormatException e) {
+        System.err.println("Argument" + args[0] + " must be an integer.");
+        gridsize = 40;
+      }
+    }
+    if(args.length > 1) {
+      try {
+        numAgents = Integer.parseInt(args[1]);
+      }catch(NumberFormatException e) {
+        System.err.println("Argument" + args[1] + " must be an integer.");
+        numAgents = 400;
+      }
+    }
+    if(args.length > 2) {
+      try {
+        initialSeed = Integer.parseInt(args[2]);
+      }catch(NumberFormatException e) {
+        System.err.println("Argument" + args[2] + " must be an integer.");
+        initialSeed = 8675309;
+      }
+    }
+    new SimulationManager(gridsize, numAgents, initialSeed);
   }
 }

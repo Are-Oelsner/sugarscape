@@ -28,7 +28,8 @@ class AgentCanvas extends JPanel
 
     private int    gridWidth;   // width of grid in cells
     private int    gridHeight;  // height of grid in cells
-    private double maxCapacity; // max resource capacity of any cell
+    private double maxSugarCapacity; // max sugar capacity of any cell
+    private double maxSpiceCapacity; // max spice capacity of any cell
 
     private static final int agentGUISize = 10;
 
@@ -68,15 +69,21 @@ class AgentCanvas extends JPanel
         // simulation.reset();  // remove all agents, etc.
 
         // determine grid's max capacity for scale colors
-        this.maxCapacity = 0.0;
+        this.maxSugarCapacity = 0.0;
+        this.maxSpiceCapacity = 0.0;
         for (int r = 0; r < simulation.gridSize; r++)
         {
             for (int c = 0; c < simulation.gridSize; c++)
             {
-                double capacity = simulation.landscape.getCellAt(r,c).getCapacity();
-                if (capacity > maxCapacity)
+                double capacity = simulation.landscape.getCellAt(r,c).getSugarCapacity();
+                if (capacity > maxSugarCapacity)
                 {
-                    this.maxCapacity = capacity;
+                    this.maxSugarCapacity = capacity;
+                }
+                capacity = simulation.landscape.getCellAt(r,c).getSpiceCapacity();
+                if (capacity > maxSpiceCapacity)
+                {
+                    this.maxSpiceCapacity = capacity;
                 }
             }
         }
@@ -168,13 +175,11 @@ class AgentCanvas extends JPanel
                 int guiY = viewportY + (a.getRow() * agentSize);
 
                 // set the color we'll use to draw the agent
-                graphics.setPaint(Color.red);
-                /*
-                if (a.needsToBeADifferentColor())
-                    graphics.setPaint(Color.red);
-                else
+                //graphics.setPaint(Color.red);
+                if (a.getBirth() > 0)
                     graphics.setPaint(Color.blue);
-                */
+                else
+                    graphics.setPaint(Color.red);
 
                 graphics.fillOval(guiX, guiY, agentSize, agentSize);
 
@@ -221,12 +226,14 @@ class AgentCanvas extends JPanel
                 int guiX = viewportX + (c * cellSize);
                 int guiY = viewportY + (r * cellSize);
 
-                // set the color we'll use to draw the agent -- green scaled relative
-                // to maximum landscape capacity
-                double capacity = simulation.landscape.getCellAt(r, c).getCapacity();
-                Color color = new Color(0, (int)(255 * capacity / this.maxCapacity), 0);
+                // set the color we'll use to draw the agent -- green and red scaled relative
+                // to maximum landscape capacities of sugar and spice respectively
+              //double sugarCapacity = simulation.landscape.getCellAt(r, c).getSugarCapacity();
+              //double spiceCapacity = simulation.landscape.getCellAt(r, c).getSpiceCapacity();
+                double sugarCapacity = simulation.landscape.getCellAt(r, c).getSugar();
+                double spiceCapacity = simulation.landscape.getCellAt(r, c).getSpice();
+                Color color = new Color((int)(255 * spiceCapacity/this.maxSpiceCapacity), (int)(255 * sugarCapacity / this.maxSugarCapacity), 0);
                 graphics.setPaint(color);
-
                 graphics.fillRect(guiX, guiY, cellSize, cellSize);
             }
         }
