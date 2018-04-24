@@ -57,6 +57,12 @@ public class Agent {
       return 1;
   }
 
+  // Outputs ratio of time-to-starvation of sugar to spice
+  public double computeRatio() {
+   return(sugar / sugarMetabolicRate) / (spice / spiceMetabolicRate);
+  }
+
+
   // Getters
   public int    getRow() { return this.row; }
   public int    getCol() { return this.col; }
