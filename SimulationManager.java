@@ -132,6 +132,23 @@ class SimulationManager extends WindowManager {
       a.setRowCol(row, col);
   }
 
+  private double getLife(Agent a, Cell c) {
+    double sugar = a.getSugar();
+    double spice = a.getSpice();
+    double sugarMetabolic = a.getSugarMetabolicRate();
+    double spiceMetabolic = a.getSpiceMetabolicRate();
+
+    sugar += c.getSugar();
+    spice += c.getSpice();
+
+    double life = sugar / sugarMetabolic;
+    if (spice / spiceMetabolic > life) {
+      life = spice / spiceMetabolic;
+    }
+
+    return life;
+  }
+
   private void moveAgent(Agent a) {
     //TODO create function that prioritizes cells based on agent metabolic rates for each resource, agent resource levels, cell max capacities/maybe current capacity. TODO
     int xSize = landscape.getXSize();
@@ -139,7 +156,7 @@ class SimulationManager extends WindowManager {
     int row = a.getRow();
     int col = a.getCol();
     int fov = a.getVision();
-    double maxSugar = 0;
+    double maxLife = 0;
     int maxRow = 0;
     int maxCol = 0;
     Cell temp;
@@ -149,26 +166,26 @@ class SimulationManager extends WindowManager {
     // need to account for multiple squares with the same amount of resources
     for (int j = 0; j <= fov; j++) {
       temp = landscape.getCellAt(row, (col + fov) % ySize);
-      if (temp.getSugarCapacity() > maxSugar && temp.getOccupied() == false) {
-        maxSugar = temp.getSugarCapacity();
+      if (getLife(a, temp) > maxLife && temp.getOccupied() == false) {
+        maxLife = getLife(a, temp);
         maxRow = row;
         maxCol = (col + fov) % ySize;
       }
       temp = landscape.getCellAt((row + fov) % xSize, col);
-      if (temp.getSugarCapacity() > maxSugar && temp.getOccupied() == false) {
-        maxSugar = temp.getSugarCapacity();
+      if (getLife(a, temp) > maxLife && temp.getOccupied() == false) {
+        maxLife = getLife(a, temp);
         maxRow = (row + fov) % xSize;
         maxCol = col;
       }
       temp = landscape.getCellAt(row, (col - fov + ySize) % ySize);
-      if (temp.getSugarCapacity() > maxSugar && temp.getOccupied() == false) {
-        maxSugar = temp.getSugarCapacity();
+      if (getLife(a, temp) > maxLife && temp.getOccupied() == false) {
+        maxLife = getLife(a, temp);
         maxRow = row;
         maxCol = (col - fov + ySize) % ySize;
       }
       temp = landscape.getCellAt((row - fov + xSize) % xSize, col);
-      if (temp.getSugarCapacity() > maxSugar && temp.getOccupied() == false) {
-        maxSugar = temp.getSugarCapacity();
+      if (getLife(a, temp) > maxLife && temp.getOccupied() == false) {
+        maxLife = getLife(a, temp);
         maxRow = (row - fov + xSize) % xSize;
         maxCol = col;
       }

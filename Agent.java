@@ -70,6 +70,10 @@ public class Agent {
   public double getMinTime() {return this.minTime;}
   public double getBirth() {return this.birthTime;} //TODO can delete, using for color setting in AgentCanvas
   public int getVision() { return vision;}
+  public double getSugar() {return sugar;}
+  public double getSpice() {return spice;}
+  public double getSugarMetabolicRate() {return sugarMetabolicRate;}
+  public double getSpiceMetabolicRate() {return spiceMetabolicRate;}
 
   // simple mutator methods below
   public void   setRowCol(int row, int col) {
