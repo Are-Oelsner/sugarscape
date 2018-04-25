@@ -22,8 +22,8 @@ public class Landscape
   }
 
   private double gaussianHelper(double x, double y) {
-    double thetaX = 0.3 * nX;
-    double thetaY = 0.3 * nY;
+    double thetaX = 0.4 * nX;
+    double thetaY = 0.4 * nY;
     return Math.pow(4.0, - ((x/thetaX)*(x/thetaX)) - ((y/thetaY)*(y/thetaY)));
   }
 
