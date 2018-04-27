@@ -142,7 +142,7 @@ class SimulationManager extends WindowManager {
     spice += c.getSpice();
 
     double life = sugar / sugarMetabolic;
-    if (spice / spiceMetabolic > life) {
+    if (spice / spiceMetabolic < life) {
       life = spice / spiceMetabolic;
     }
 
