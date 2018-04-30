@@ -12,7 +12,7 @@ public class Cell {
   private double sugarRR = 1.0;
   private double spiceRR = 1.0;
   // occupied status
-  private boolean occupied = false;
+  private Agent occupied = null;
   // time of last resource depletion
   private double timeLastUpdated = 0;
 
@@ -40,7 +40,7 @@ public class Cell {
   public double getSpiceCapacity() { return spiceCapacity;}
   public double getSugar() { return sugar;}
   public double getSpice() { return spice;}
-  public boolean getOccupied() { return occupied;}
+  public Agent getOccupied() { return occupied;}
 
   public void setSugar(double r) { sugar = r;}
   public void setSpice(double r) { spice = r;}
@@ -58,8 +58,8 @@ public class Cell {
     spice = Math.min(spiceCapacity, spice + ((time - timeLastUpdated) * spiceRR));
   }
 
-  public void setOccupied(boolean status) {
-    occupied = status;
+  public void setOccupied(Agent agent) {
+    occupied = agent;
   }
 
 }
