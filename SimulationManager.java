@@ -107,6 +107,8 @@ class SimulationManager extends WindowManager {
         landscape.getCellAt(a.getRow(), a.getCol()).updateCell(this.time);
       }
       else { // Handle death
+        Agent temp = agentList.get(agentIndex);
+        landscape.getCellAt(temp.getRow(), temp.getCol()).setOccupied(null);
         agentList.set(agentIndex, new Agent("agent " + agentIndex, this.time));
         placeAgent(agentList.get(agentIndex));
       }
@@ -119,7 +121,7 @@ class SimulationManager extends WindowManager {
       landscape.update(this.time);
       canvas.repaint();
       //try { Thread.sleep(500); } catch (Exception e) {}
-      try { Thread.sleep(5); } catch (Exception e) {}
+      try { Thread.sleep(1); } catch (Exception e) {}
 
     }
   }
@@ -131,6 +133,7 @@ class SimulationManager extends WindowManager {
         col = rng.nextInt(gridSize); // an int in [0, gridSize-1]
       } while(landscape.getCellAt(row, col).getOccupied() != null);
       a.setRowCol(row, col);
+      landscape.getCellAt(row, col).setOccupied(a);
   }
 
   private double getLife(Agent a, Cell c) {
@@ -294,6 +297,7 @@ class SimulationManager extends WindowManager {
         b.setSugar(bSugar);
         b.setSpice(bSpice);
         System.out.println("trade happened");
+        System.out.println("price: " + price);
         trade(a, b);
       } else {
         return;
@@ -310,6 +314,7 @@ class SimulationManager extends WindowManager {
         b.setSugar(bSugar);
         b.setSpice(bSpice);
         System.out.println("trade happened");
+        System.out.println("price: " + price);
         trade(a, b);
       } else {
         return;
