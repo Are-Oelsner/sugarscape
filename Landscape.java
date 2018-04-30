@@ -31,6 +31,10 @@ public class Landscape
     return cell[row][col];
   }
 
+  public Agent getAgentAt(int row, int col) {
+    return cell[row][col].getOccupied();
+  }
+
   public int getXSize() {
     return nX;
   }

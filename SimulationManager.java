@@ -200,32 +200,6 @@ class SimulationManager extends WindowManager {
     landscape.getCellAt(maxRow, maxCol).setOccupied(a);
   }
 
-  private void market(Agent a) {
-    int xSize = landscape.getXSize();
-    int ySize = landscape.getYSize();
-    int row = a.getRow();
-    int col = a.getCol();
-    double ratio = a.computeRatio();
-    double tmp = ratio;
-    double max = ratio;
-    double maxRatioDiff = 0;
-
-    // Checks northern cell
-    if(landscape.getCellAt(row-1 % ySize, col).getOccupied() != null) {
-      if(Math.abs((tmp = landscape.getCellAt(row-1 % ySize, col).getOccupied().computeRatio()) - ratio) > maxRatioDiff) {
-        max = tmp;
-        maxRatioDiff = Math.abs(ratio - max);
-      }
-    }
-    // Checks western cell
-    else if(landscape.getCellAt(row, col-1 % xSize).getOccupied() != null)
-      if((tmp = landscape.getCellAt(row, col-1 % xSize).getOccupied().computeRatio())
-    // Checks eastern cell
-    else if(landscape.getCellAt(row, col+1 % xSize).getOccupied() != null)
-    // Checks southern cell
-    else if(landscape.getCellAt(row+1 % ySize, col).getOccupied() != null)
-
-
   //======================================================================
   //* public static void main(String[] args)
   //* Just including main so that the simulation can be executed from the

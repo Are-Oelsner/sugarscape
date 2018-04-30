@@ -75,6 +75,13 @@ public class Agent {
   public double getSugarMetabolicRate() {return sugarMetabolicRate;}
   public double getSpiceMetabolicRate() {return spiceMetabolicRate;}
 
+  // Trade
+  public void trade(double sug, double spi) {
+    sugar += sug;
+    spice += spice;
+  }
+
+
   // simple mutator methods below
   public void   setRowCol(int row, int col) {
     this.row = row;
