@@ -12,3 +12,6 @@ r1:
 
 o:
 	vim -p Agent.java Cell.java Landscape.java SimulationManager.java
+
+clean:
+	rm -rf *.class
