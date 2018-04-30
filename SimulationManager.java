@@ -56,7 +56,7 @@ class SimulationManager extends WindowManager {
       do { // Randomly assigns agent to unoccupied cell
         row = rng.nextInt(gridSize); // an int in [0, gridSize-1]
         col = rng.nextInt(gridSize); // an int in [0, gridSize-1]
-      } while(landscape.getCellAt(row, col).getOccupied());
+      } while(landscape.getCellAt(row, col).getOccupied() != null);
       agentList.get(i).setRowCol(row, col);
     }
 
@@ -130,7 +130,7 @@ class SimulationManager extends WindowManager {
       do { // Randomly assigns agent to unoccupied cell
         row = rng.nextInt(gridSize); // an int in [0, gridSize-1]
         col = rng.nextInt(gridSize); // an int in [0, gridSize-1]
-      } while(landscape.getCellAt(row, col).getOccupied());
+      } while(landscape.getCellAt(row, col).getOccupied() != null);
       a.setRowCol(row, col);
   }
 
@@ -144,7 +144,7 @@ class SimulationManager extends WindowManager {
     spice += c.getSpice();
 
     double life = sugar / sugarMetabolic;
-    if (spice / spiceMetabolic > life) {
+    if (spice / spiceMetabolic < life) {
       life = spice / spiceMetabolic;
     }
 
@@ -162,30 +162,30 @@ class SimulationManager extends WindowManager {
     int maxCol = 0;
     Cell temp;
 
-    landscape.getCellAt(row, col).setOccupied(false);
+    landscape.getCellAt(row, col).setOccupied(null);
 
     // need to account for multiple squares with the same amount of resources
     for (int j = 0; j <= fov; j++) {
       temp = landscape.getCellAt(row, (col + fov) % ySize);
-      if (getLife(a, temp) > maxLife && temp.getOccupied() == false) {
+      if (getLife(a, temp) > maxLife && temp.getOccupied() == null) {
         maxLife = getLife(a, temp);
         maxRow = row;
         maxCol = (col + fov) % ySize;
       }
       temp = landscape.getCellAt((row + fov) % xSize, col);
-      if (getLife(a, temp) > maxLife && temp.getOccupied() == false) {
+      if (getLife(a, temp) > maxLife && temp.getOccupied() == null) {
         maxLife = getLife(a, temp);
         maxRow = (row + fov) % xSize;
         maxCol = col;
       }
       temp = landscape.getCellAt(row, (col - fov + ySize) % ySize);
-      if (getLife(a, temp) > maxLife && temp.getOccupied() == false) {
+      if (getLife(a, temp) > maxLife && temp.getOccupied() == null) {
         maxLife = getLife(a, temp);
         maxRow = row;
         maxCol = (col - fov + ySize) % ySize;
       }
       temp = landscape.getCellAt((row - fov + xSize) % xSize, col);
-      if (getLife(a, temp) > maxLife && temp.getOccupied() == false) {
+      if (getLife(a, temp) > maxLife && temp.getOccupied() == null) {
         maxLife = getLife(a, temp);
         maxRow = (row - fov + xSize) % xSize;
         maxCol = col;
@@ -197,7 +197,7 @@ class SimulationManager extends WindowManager {
     // Pass agent current resource levels of cell
     a.harvest(landscape.getCellAt(maxRow, maxCol).getSugar(), landscape.getCellAt(maxRow, maxCol).getSpice());
     // Sets cell as occupied
-    landscape.getCellAt(maxRow, maxCol).setOccupied(true);
+    landscape.getCellAt(maxRow, maxCol).setOccupied(a);
   }
 
   private void market(Agent a) {
