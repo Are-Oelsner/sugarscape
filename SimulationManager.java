@@ -101,8 +101,6 @@ class SimulationManager extends WindowManager {
       if(a.getNextEventType() == 0) { // Handle movement and resource consumption
         // Move agent to richest available cell within vision range
         moveAgent(a);
-        // If agent has viable trade partner(s) available, trade
-        market(a);
         // Regrow new cell based on time since lastDepleted time TODO should this be here?
         landscape.getCellAt(a.getRow(), a.getCol()).regrowCell(this.time);
         // Depletes resources of new cell, sets lastDepleted time of cell.
