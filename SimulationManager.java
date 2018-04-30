@@ -101,8 +101,6 @@ class SimulationManager extends WindowManager {
       if(a.getNextEventType() == 0) { // Handle movement and resource consumption
         // Move agent to richest available cell within vision range
         moveAgent(a);
-        // If agent has viable trade partner(s) available, trade
-        market(a);
         // Regrow new cell based on time since lastDepleted time TODO should this be here?
         landscape.getCellAt(a.getRow(), a.getCol()).regrowCell(this.time);
         // Depletes resources of new cell, sets lastDepleted time of cell.
@@ -318,31 +316,6 @@ class SimulationManager extends WindowManager {
       }
     }
   }
-
-  private void market(Agent a) {
-    int xSize = landscape.getXSize();
-    int ySize = landscape.getYSize();
-    int row = a.getRow();
-    int col = a.getCol();
-    double ratio = a.computeRatio();
-    double tmp = ratio;
-    double max = ratio;
-    double maxRatioDiff = 0;
-
-    // Checks northern cell
-    if(landscape.getCellAt(row-1 % ySize, col).getOccupied() != null) {
-      if(Math.abs((tmp = landscape.getCellAt(row-1 % ySize, col).getOccupied().computeRatio()) - ratio) > maxRatioDiff) {
-        max = tmp;
-        maxRatioDiff = Math.abs(ratio - max);
-      }
-    }
-    // Checks western cell
-    else if(landscape.getCellAt(row, col-1 % xSize).getOccupied() != null)
-      if((tmp = landscape.getCellAt(row, col-1 % xSize).getOccupied().computeRatio())
-    // Checks eastern cell
-    else if(landscape.getCellAt(row, col+1 % xSize).getOccupied() != null)
-    // Checks southern cell
-    else if(landscape.getCellAt(row+1 % ySize, col).getOccupied() != null)
 
 
   //======================================================================
