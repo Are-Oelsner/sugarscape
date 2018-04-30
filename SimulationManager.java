@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.*;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -198,6 +199,124 @@ class SimulationManager extends WindowManager {
     a.harvest(landscape.getCellAt(maxRow, maxCol).getSugar(), landscape.getCellAt(maxRow, maxCol).getSpice());
     // Sets cell as occupied
     landscape.getCellAt(maxRow, maxCol).setOccupied(a);
+
+    trade(a);
+  }
+
+  private void trade(Agent a) {
+    int row = a.getRow();
+    int col = a.getCol();
+
+    if (col + 1 < landscape.getYSize()) {
+      Agent temp = landscape.getCellAt(row, col + 1).getOccupied();
+      if (temp != null) {
+        trade(a, temp);
+      }
+    }
+    if (row + 1 < landscape.getXSize()) {
+      Agent temp = landscape.getCellAt(row + 1, col).getOccupied();
+      if (temp != null) {
+        trade(a, temp);
+      }
+    }
+    if (col - 1 >= 0) {
+      Agent temp = landscape.getCellAt(row, col - 1).getOccupied();
+      if (temp != null) {
+        trade(a, temp);
+      }
+    }
+    if (row - 1 >= 0) {
+      Agent temp = landscape.getCellAt(row - 1, col).getOccupied();
+      if (temp != null) {
+        trade(a, temp);
+      }
+    }
+  }
+
+  private void trade(Agent a, Agent b) {
+    double MRSa = a.computeRatio();
+    double MRSb = b.computeRatio();
+    if (MRSa == MRSb) {
+      return;
+    }
+    double price = Math.sqrt(MRSa * MRSb);
+    double aSugar = a.getSugar();
+    double aSpice = a.getSpice();
+    double bSugar = b.getSugar();
+    double bSpice = b.getSpice();
+
+    double aSugarMetabolic = a.getSugarMetabolicRate();
+    double aSpiceMetabolic = a.getSpiceMetabolicRate();
+    double bSugarMetabolic = b.getSugarMetabolicRate();
+    double bSpiceMetabolic = b.getSpiceMetabolicRate();
+
+    double aTimeToLive = a.getTimeToLive();
+    double bTimeToLive = b.getTimeToLive();
+
+    boolean MRSaIsLarger = false;
+    if (price > 1) {
+      if (MRSa > MRSb) {
+        MRSaIsLarger = true;
+        aSugar += 1;
+        aSpice -= price;
+        bSugar -= 1;
+        bSpice += price;
+      } else {
+        MRSaIsLarger = false;
+        aSugar -= 1;
+        aSpice += price;
+        bSugar += 1;
+        bSpice -= price;
+      }
+    } else {
+      if (MRSa > MRSb) {
+        MRSaIsLarger = true;
+        aSugar += price;
+        aSpice -= 1;
+        bSugar -= price;
+        bSpice += 1;
+      } else {
+        MRSaIsLarger = false;
+        aSugar -= price;
+        aSpice += 1;
+        bSugar += price;
+        bSpice -= 1;
+      }
+    }
+
+    if (MRSaIsLarger = true) {
+      double tempMRSa = (aSpice / aSpiceMetabolic) / (aSugar / aSugarMetabolic);
+      double tempMRSb = (bSpice / bSpiceMetabolic) / (bSugar / bSugarMetabolic);
+      double aTimeToLiveTemp = Math.min(aSpice / aSpiceMetabolic, aSugar / aSugarMetabolic);
+      double bTimeToLiveTemp = Math.min(bSpice / bSpiceMetabolic, bSugar / bSugarMetabolic);
+
+      if (tempMRSa > tempMRSb && aTimeToLiveTemp > aTimeToLive && bTimeToLiveTemp > bTimeToLive) {
+        a.setSugar(aSugar);
+        a.setSpice(aSpice);
+        b.setSugar(bSugar);
+        b.setSpice(bSpice);
+        System.out.println("trade happened");
+        trade(a, b);
+      } else {
+        return;
+      }
+    } else {
+      double tempMRSa = (aSpice / aSpiceMetabolic) / (aSugar / aSugarMetabolic);
+      double tempMRSb = (bSpice / bSpiceMetabolic) / (bSugar / bSugarMetabolic);
+      double aTimeToLiveTemp = Math.min(aSpice / aSpiceMetabolic, aSugar / aSugarMetabolic);
+      double bTimeToLiveTemp = Math.min(bSpice / bSpiceMetabolic, bSugar / bSugarMetabolic);
+
+      if (tempMRSa < tempMRSb && aTimeToLiveTemp > aTimeToLive && bTimeToLiveTemp > bTimeToLive) {
+        a.setSugar(aSugar);
+        a.setSpice(aSpice);
+        b.setSugar(bSugar);
+        b.setSpice(bSpice);
+        System.out.println("trade happened");
+        trade(a, b);
+      } else {
+        return;
+      }
+    }
   }
 
   //======================================================================

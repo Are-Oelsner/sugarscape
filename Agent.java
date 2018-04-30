@@ -59,7 +59,7 @@ public class Agent {
 
   // Outputs ratio of time-to-starvation of sugar to spice
   public double computeRatio() {
-   return(sugar / sugarMetabolicRate) / (spice / spiceMetabolicRate);
+   return(spice / spiceMetabolicRate) / (sugar / sugarMetabolicRate);
   }
 
 
@@ -81,6 +81,23 @@ public class Agent {
     spice += spice;
   }
 
+  public void setSugar(double s) {
+    sugar = s;
+  }
+
+  public void setSpice(double s) {
+    spice = s;
+  }
+
+  public double getTimeToLive() {
+    double sugarTimeToLive = sugar / sugarMetabolicRate;
+    double spiceTimeToLive = spice / spiceMetabolicRate;
+    if (sugarTimeToLive < spiceTimeToLive) {
+      return sugarTimeToLive;
+    } else {
+      return spiceTimeToLive;
+    }
+  }
 
   // simple mutator methods below
   public void   setRowCol(int row, int col) {
