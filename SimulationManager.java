@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.BorderLayout;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.*;
@@ -19,11 +20,12 @@ class SimulationManager extends WindowManager {
   private AgentCanvas canvas;           // the canvas on which agents are drawn
   private double time;                  // current simulation time
   private Random rng;
-
+  private PrintWriter pw;
   //======================================================================
   //* public SimulationManager(int gridSize, int numAgents, int initialSeed)
   //======================================================================
-  public SimulationManager(int gridSize, int numAgents, int initialSeed)
+
+  public SimulationManager(int gridSize, int numAgents, int initialSeed, String outFile)
   {
     super("Sugarscape", 500, 500);  // name, window width, window height
 
@@ -34,7 +36,21 @@ class SimulationManager extends WindowManager {
     this.gridSize  = gridSize;
     this.time = 0.;
     this.rng = new Random(initialSeed);
-
+    try{
+      this.pw = new PrintWriter(outFile, "UTF-8");
+      pw.print("Result of extended sugarscape simulation: \n");
+      pw.print("Parameters: \n");
+      pw.print("Grid Size: ");
+      pw.println(gridSize);
+      pw.print("NUmber of agents: ");
+      pw.println(numAgents);
+      pw.print("Initial seed: ");
+      pw.println(initialSeed);
+      pw.println();
+    }catch(Exception e){
+      System.out.println("Error: " + e.getMessage());
+	    System.exit(0);
+    }
     // TODO Might want to make the max value much lower. This would be one agent per
     // cell, which wouldn't allow for movement. Also because of the random
     // nature of placing agents originally it would make setup times increase
@@ -91,7 +107,9 @@ class SimulationManager extends WindowManager {
     double minTime;
     while(this.time < 100) {
       this.time = (double)pq.peek();
-
+      pw.print("Event time: ");
+      pw.print(this.time);
+      pw.print("   ");
       // Get next agent
       agentIndex = map.get(this.time);
       Agent a = agentList.get(agentIndex);
@@ -100,6 +118,14 @@ class SimulationManager extends WindowManager {
       // Handles Event
       if(a.getNextEventType() == 0) { // Handle movement and resource consumption
         // Move agent to richest available cell within vision range
+        pw.print("Move Event: ");
+        pw.print(" Agent: ");
+        pw.print(a.getID());
+        pw.print(" -> current row and col: ");
+        pw.print(a.getRow());
+        pw.print(" ");
+        pw.print(a.getCol());
+        pw.print("\n");
         moveAgent(a);
         // Regrow new cell based on time since lastDepleted time TODO should this be here?
         landscape.getCellAt(a.getRow(), a.getCol()).regrowCell(this.time);
@@ -108,6 +134,14 @@ class SimulationManager extends WindowManager {
       }
       else { // Handle death
         Agent temp = agentList.get(agentIndex);
+        pw.print("Death Event: ");
+        pw.print(" Agent: ");
+        pw.print(temp.getID());
+        pw.print(" -> current row and col: ");
+        pw.print(temp.getRow());
+        pw.print(" ");
+        pw.print(temp.getCol());
+        pw.print("\n");
         landscape.getCellAt(temp.getRow(), temp.getCol()).setOccupied(null);
         agentList.set(agentIndex, new Agent("agent " + agentIndex, this.time));
         placeAgent(agentList.get(agentIndex));
@@ -124,6 +158,7 @@ class SimulationManager extends WindowManager {
       try { Thread.sleep(1); } catch (Exception e) {}
 
     }
+    pw.close();
   }
 
   private void placeAgent(Agent a) {
@@ -154,6 +189,7 @@ class SimulationManager extends WindowManager {
   }
 
   private void moveAgent(Agent a) {
+    pw.print("    ");
     int xSize = landscape.getXSize();
     int ySize = landscape.getYSize();
     int row = a.getRow();
@@ -193,10 +229,19 @@ class SimulationManager extends WindowManager {
         maxCol = col;
       }
     }
-
+    
     // Assign new cell
+    pw.print("Agent move to row and col: ");
+    pw.print(maxRow);
+    pw.print(" ");
+    pw.print(maxCol);
     a.setRowCol(maxRow, maxCol);
     // Pass agent current resource levels of cell
+    pw.print("  Resources collected: sugar->");
+    pw.print(landscape.getCellAt(maxRow, maxCol).getSugar());
+    pw.print("  spice->");
+    pw.print(landscape.getCellAt(maxRow, maxCol).getSpice());
+    pw.print("\n");
     a.harvest(landscape.getCellAt(maxRow, maxCol).getSugar(), landscape.getCellAt(maxRow, maxCol).getSpice());
     // Sets cell as occupied
     landscape.getCellAt(maxRow, maxCol).setOccupied(a);
@@ -333,6 +378,7 @@ class SimulationManager extends WindowManager {
     int gridsize = 40;
     int numAgents = 400;
     int initialSeed = 8675309;
+    String file = "output.txt";
     if(args.length > 0) {
       try {
         gridsize = Integer.parseInt(args[0]);
@@ -357,6 +403,9 @@ class SimulationManager extends WindowManager {
         initialSeed = 8675309;
       }
     }
-    new SimulationManager(gridsize, numAgents, initialSeed);
+    if(args.length > 3) {
+      file = args[3];  
+    }
+    new SimulationManager(gridsize, numAgents, initialSeed, file);
   }
 }
