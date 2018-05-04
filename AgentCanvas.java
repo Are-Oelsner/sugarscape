@@ -179,7 +179,7 @@ class AgentCanvas extends JPanel
                 if (a.computeRatio() < 1)
                     graphics.setPaint(Color.blue);
                 else
-                    graphics.setPaint(Color.red);
+                    graphics.setPaint(Color.pink);
 
                 graphics.fillOval(guiX, guiY, agentSize, agentSize);
 

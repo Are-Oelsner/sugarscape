@@ -258,24 +258,32 @@ class SimulationManager extends WindowManager {
     if (col + 1 < landscape.getYSize()) {
       Agent temp = landscape.getCellAt(row, col + 1).getOccupied();
       if (temp != null) {
+        pw.print("    ");
+        pw.print("South Trade: ");
         trade(a, temp);
       }
     }
     if (row + 1 < landscape.getXSize()) {
       Agent temp = landscape.getCellAt(row + 1, col).getOccupied();
       if (temp != null) {
+        pw.print("    ");
+        pw.print("East Trade: ");
         trade(a, temp);
       }
     }
     if (col - 1 >= 0) {
       Agent temp = landscape.getCellAt(row, col - 1).getOccupied();
       if (temp != null) {
+        pw.print("    ");
+        pw.print("North Trade: ");
         trade(a, temp);
       }
     }
     if (row - 1 >= 0) {
       Agent temp = landscape.getCellAt(row - 1, col).getOccupied();
       if (temp != null) {
+        pw.print("    ");
+        pw.print("West Trade: ");
         trade(a, temp);
       }
     }
@@ -287,7 +295,6 @@ class SimulationManager extends WindowManager {
     if (MRSa == MRSb) {
       return;
     }
-    pw.print("    ");
     pw.print("    ");
     pw.print("Trade between: ");
     pw.print(a.getID());
