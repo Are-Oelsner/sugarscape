@@ -1,0 +1,6 @@
+Trade and movement rule
+Movement Rule:
+We changed movement rule from only looking for the highest sugar resource cell to looking for the cell that the agent can benefit most from within its vision. More specifically, we calculated the amount of time the agent can live has it moved to the new cell, and move the agent to the cell which gives the agent longest time to live.
+
+Trade rule:
+Once an agent moved to a new cell, we examined its direct neighbors (up, down, left, and right)
