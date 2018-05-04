@@ -79,6 +79,8 @@ class SimulationManager extends WindowManager {
 
     this.createWindow();
     this.run();
+    // this.destroyWindow();
+    return;
   }
 
   //======================================================================
@@ -285,7 +287,16 @@ class SimulationManager extends WindowManager {
     if (MRSa == MRSb) {
       return;
     }
+    pw.print("    ");
+    pw.print("    ");
+    pw.print("Trade between: ");
+    pw.print(a.getID());
+    pw.print(" and ");
+    pw.print(b.getID());
     double price = Math.sqrt(MRSa * MRSb);
+    pw.print("  price->");
+    pw.print(price);
+    pw.print("\n");
     double aSugar = a.getSugar();
     double aSpice = a.getSpice();
     double bSugar = b.getSugar();
