@@ -17,9 +17,3 @@ Output:
   2) summary of each event (time and type)
   3) related agent (agent ID)
   4) summary of each trade (related agent and price)
-
-Things to do:
-  convert SimulationManager::moveAgent() function to judge based on both resources and the agents metabolic rates
-  Trade
-  Figure out why gridSize can't be set higher than the default of 40 without showing a blank display
-  Check for trade in four cardinal neighbors after each move

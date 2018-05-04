@@ -9,6 +9,7 @@ public class Landscape
   public Landscape(int x, int y) {
     nX = x;
     nY = y;
+    cell = new Cell[nX][nY];
     for (int i = 0; i < nX; i++) {
       for (int j = 0; j < nY; j++) {
         cell[i][j] = new Cell(getGaussian(i, j), sugarRegrowthRate, getGaussian(nX-i, j), spiceRegrowthRate);

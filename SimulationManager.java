@@ -25,9 +25,9 @@ class SimulationManager extends WindowManager {
   //* public SimulationManager(int gridSize, int numAgents, int initialSeed)
   //======================================================================
 
-  public SimulationManager(int gridSize, int numAgents, int initialSeed, String outFile)
+  public SimulationManager(int gridSize, int numAgents, int initialSeed, String outFile, int windowSize)
   {
-    super("Sugarscape", 500, 500);  // name, window width, window height
+    super("Sugarscape", windowSize, windowSize);  // name, window width, window height
 
     this.pq = new PriorityQueue<Double>(numAgents);
     this.map = new HashMap<Double, Integer>();
@@ -417,6 +417,8 @@ class SimulationManager extends WindowManager {
     if(args.length > 3) {
       file = args[3];  
     }
-    new SimulationManager(gridsize, numAgents, initialSeed, file);
+
+    int windowSize = gridsize * 10 + 100;
+    new SimulationManager(gridsize, numAgents, initialSeed, file, windowSize);
   }
 }
