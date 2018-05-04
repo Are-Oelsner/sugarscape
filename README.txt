@@ -11,6 +11,12 @@ Build and Run:
   To run the project with custom settings, run
   java SimulationManager [grid_ize] [num_of_agents] [initial_seed] [output_file_path]
 
+Project Desgin:
+  SimulationManager: This is the entry point of our program and also the we place our simulation structure in. It extends the WindowManager. It has one instance object of Landscape and an ArrayList of objects of Agent.
+  Landscape: This class represents the grid. It holds and controls all the cells.
+  Cell: This class represents each cell. Each object has capacity, regrowth rate and current level for both resources (sugar and spice).
+  Agent: This class represents each Agent. Each object has ID, current position, metabolic rate for both resources and current level of both resources.
+
 Output:
   In the output file generate by the program ("output.txt" if default) you will find:
   1) summary of the experiment(grid size, number of agents, initial seed)
