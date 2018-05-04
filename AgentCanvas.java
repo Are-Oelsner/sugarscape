@@ -176,7 +176,7 @@ class AgentCanvas extends JPanel
 
                 // set the color we'll use to draw the agent
                 //graphics.setPaint(Color.red);
-                if (a.computeRatio() > 0.5)
+                if (a.computeRatio() < 1)
                     graphics.setPaint(Color.blue);
                 else
                     graphics.setPaint(Color.red);
